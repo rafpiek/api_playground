@@ -1,4 +1,4 @@
-class SessionsController < ApplicationController
+class SessionsController < AuthenticatedController
   skip_before_action :authenticate, only: :create
 
   before_action :set_session, only: %i[ show destroy ]
@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
     user = User.find_by(email: params[:email])
 
     if user && user.authenticate(params[:password])
-      @session = user.sessions.create!
+      @session = user.sessions.create!(role: request.headers["X-Role"])
       response.set_header "X-Session-Token", @session.signed_id
 
       render json: @session, status: :created
@@ -26,6 +26,11 @@ class SessionsController < ApplicationController
 
   def destroy
     @session.destroy
+  end
+
+  def sign_out
+    Current.session.destroy
+    head 204
   end
 
   private

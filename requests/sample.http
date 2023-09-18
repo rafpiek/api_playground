@@ -1,0 +1,3 @@
+# GET test request on root path
+
+GET {{host}}

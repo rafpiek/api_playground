@@ -8,4 +8,24 @@ class Session < ApplicationRecord
 
   after_create  { user.events.create! action: "signed_in" }
   after_destroy { user.events.create! action: "signed_out" }
+
+  before_create :set_timeout
+
+  TIMEOUT = 1.minute
+
+  def timeout
+    Time.at(read_attribute(:timeout))
+  end
+
+  def expired?
+    timeout < Time.current
+  end
+
+  private
+
+  def set_timeout
+    self.timeout = TIMEOUT.from_now
+  end
+
+
 end

@@ -1,9 +1,10 @@
 p "Create sample user"
 
-user = User.first_or_create(
+user = User.find_or_initialize_by(
   email: "email@email.com",
-  password: "password",
-  password_confirmation: "password"
 )
+
+user.password = "passwordpassword"
+user.save!
 
 p "User #{user.email} created."
